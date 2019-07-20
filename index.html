@@ -1,71 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">    
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <title>Gify Api</title>
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-</head>
-<body>
-    <!---Buttons-->
-    <div id="buttons-view">
-    
-    <!------Where the Gifs will Appear-->
-<div id="gifs-appear-here">
-</div>
-<!---this is where Ratings will appear-->
-<div id="ratings"></div>
-<!--------------------------------New div to seperate -------------------------------------------------->
-<div id="container">
-<form id="movie-form">
+    <head>
+        <meta charset="UTF-8">
+        <title>Disney Movies Api</title>
+
+        <!-- Added a link to Bootstrap-->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
         
-        <input type="text" id="movie-input"><br>
-  
- <!-- Button triggers new movie to be added -->
-        <input id="add-movie" class="btn btn-info" type="submit" value="Add another Disney Movie!">
-      </form>
-</div> <!---End of Container Div-->
+        <!-- This links to the jQuery Library -->
+        <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
+    	
+    </head>
+<body>
 
-<!---------------------------------JavaScript and Jquery Begins---------------------------------------------------------------------->  
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<body background="http://clipart-library.com/images/yckAgpozi.jpg">
+
+
+
+<!-- This will be where the buttons are added and displayed. -->
+<div id="buttonItems"></div>
+
+<!-- form to add button -->
+<form>
+    <div class="row">
+        <div class="col-md-3">
+            <input type="text" id="movie-input" class="form-control">
+        </div>
+        <input id="add-movie" type="submit" class="btn btn-primary" value="Add Another Disney Movie!">
+       <span id="entry"></span>
+    </div>
+</form>
+
+<!-- ratings and imgs will show once button is clicked  --> 
+<div id="ratings"></div>
+
+<!------------------------------------------------------------------------ Beginning of the javascript -->
 <script type="text/javascript">
-//array
 
-var disneyMovies = ["Aladdin","Moana","Finding Nemo","Lion King","Monsters Inc.","Toy Story","The Incredibles","Tarzan","101 Dalmations",]
-var disneyImage
-
-
+//Array
+	var topics = ["Aladdin","Moana","Finding Nemo","Lion King","Monsters Inc.","Toy Story","The Incredibles","Tarzan","101 Dalmations"]
+    var disneyImage = "";
 
 
-//Button Click for Each Gif
-$('button').on("click",function() {
-    var disneyMovie = $(this).attr('data-person');
-    var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + disneyMovie + "&api_key=BQ7nmGOxVBdNtnmUv2DvrJkxQjlMtQ4q";
-//ajax call
-    $.ajax({
-        url: queryURL,
-        method: "GET"
-    })
-//returns a promise
-    .then(function(repsonse){
-        console.log(response);
+// function for movies to appear at the top 
+function moviesTop () {
+    $("#buttonItems").empty();
+    $("#movie-input").val("");
+    for (var i = 0; i < topics.length; i++) {
+        var button = $("<button class='btn btn-primary'>");
+        button.addClass("disney");
+        button.attr("disneytitle", topics[i]);
+        button.text(topics[i]);
+        $("#buttonItems").append(button);
+        $("#buttonItems").append(" ");
+    }
+}
+moviesTop();
 
 
-    });
+//img added after button clicked for adding movie
+$("#add-movie").on("click", function(event) {
+    $("#entry").empty();
+    event.preventDefault();
+    var disneyInput = $("#movie-input").val().trim();
+    var disneyMovie = $(this).attr("disneytitle");
     
 
 
+  
+    var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + disneyInput + "&limit=10&api_key=BQ7nmGOxVBdNtnmUv2DvrJkxQjlMtQ4q";
+        $.ajax({ url: queryURL, method: "GET"}).done(function(response) {
+        if (response.pagination.total_count >= 10) {
+            topics.push(disneyInput);
+            moviesTop(); }
+             $("#movie-input").val("");
+        });
 });
+$(document).on("click",".disney", display);
+function display() {
 
-//Button Click for Submit Button
 
-</script> 
+   
+    var disneyMovie = $(this).attr("disneytitle");
 
-<!----BootStrap Links -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    // Query and limites 10
+    var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + disneyMovie + "&limit=10&api_key=BQ7nmGOxVBdNtnmUv2DvrJkxQjlMtQ4q";
+    $.ajax({ url: queryURL, method: "GET"})
+    .done(function(response) {        
+        for (var j = 0; j < response.data.length; j++) {
+            var active = response.data[j].images.fixed_width.url;
+            var still = response.data[j].images.fixed_width_still.url;
+            var rating = "Rating: " + (response.data[j].rating).toUpperCase();
+            var disneyImage = $("<img>");
+            
+            
+
+ // Adding Ratings and Images
+         var ratingDiv = $("<div id='ratingDiv'>" + rating + "</div>");
+        disneyImage.attr({"active":active, "still":still, "src":still, "state":"still"});
+          $("#ratings").prepend(ratingAndImage);
+            // New Div for Image and Rating.
+            var ratingAndImage = $("<div>");
+            $(ratingAndImage).css({"float":"left"});
+            $(ratingAndImage).prepend(ratingDiv, disneyImage);
+             
+
+
+           
+            // Picture click that will either make the image move or be still .
+            $(disneyImage).on("click", function(event) {                
+                var state = $(this).attr("state");
+                var source = $(this).attr("src");
+                if (state === "still") {
+                $(this).attr("src", $(this).attr("active"));
+                $(this).attr("state", "active"); }
+                else {
+                $(this).attr("src", $(this).attr("still"));
+                $(this).attr("state", "still"); } 
+            });
+        }
+   });
+}
+</script>
 </body>
 </html>
